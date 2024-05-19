@@ -110,3 +110,20 @@ colSums(North_Point_List==0)
 
 #### 2.3 Distribution of Variables
 - The Distribution of Purchase graph (Figure 2.3.1) shows that 1000 customers made purchases and 1000 customers didn't make any purchases after receiving a mail from the company. The distribution of gender (Figure 2.3.1) shows that male customers are more than female customers.
+```
+# Distribution of 'Purchase'
+ggplot(North_Point_List, aes(x = Purchase)) +
+  geom_bar(fill = "grey", color = "black") +
+  theme_minimal() +
+  labs(title = "Distribution of Purchase",
+       x = "Purchase",
+       y = "Frequency")
+
+#Distribution of Gender
+barplot(table(North_Point_List$Gender.male), main = "Distribution of Gender= Male", xlab = "Gender", col = "grey", border = "black")
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/d62c5206-a0a6-4771-bbc5-155d2c435235"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 2.3.1 :</b> Distribution of Purchase and Gender=Male></p>
+</div>
