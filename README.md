@@ -7,10 +7,10 @@
 - [1.0 Business Problems and Goals](#10-business-problems-and-goals)	
   - [1.1 Business Problems:](#11-business-problems)	
   - [1.2 Analytics Goals:](#12-analytics-goals)
-- [2.0 Data Exploration and Preprocessing](#20-data-exploration-and-preprocessing)	
-  - [2.1 Attributes Definition:](21-attributes-definition)	
-  - [2.2 Data Exploration:](22-data-exploration)	
-  - [2.3 Distribution of Variables](23-distribution-of-variables)
+- [2.0 Data Exploration and Preprocessing](#20-data-exploration-and-preprocessing)
+  - [2.1 Attributes Definition](#21-attributes-definition)
+  - [2.2 Data Exploration](#22-data-exploration)
+  - [2.3 Distribution of Variables](#23-distribution-of-variables)
  
 ### Introduction
 The North Point Software Company is a firm that sells games and educational software. The company wants to expand its customer base, so they join the group name consortium. This group specializes in computer hardware and software products. Every member of the group shares their customer list in a pool, and they receive the same number of customers from the pool. The North Point Software Company shared 200,000 names in the pool, for a total of 5,000,000 names in the pool. The company picked 20,000 names and did a test mailing. Out of the 20,000 customers listed, 1065 purchased after receiving mail, with a response rate of 0.053, or 5.3%. So, the company made a list of 1000 purchasers and 1000 non-purchasers (a response rate of 0.5 or 50%) to build the best prediction model. While using the prediction model in the pool, the purchase rate needs to be adjusted back down by multiplying each “case’s probability of purchase” by 5.3/50, or 0.106. The company is allowed to use a prediction model in the pool (5,000,000), so they can select the top 180,000 customers from the pool. The study will use the models to identify the purchasers and predict their spending behaviours to maximize gross profit and the customer base.
