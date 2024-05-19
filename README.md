@@ -11,9 +11,10 @@
   - [2.1 Attributes Definition](#21-attributes-definition)
   - [2.2 Data Exploration](#22-data-exploration)
   - [2.3 Distribution of Variables](#23-distribution-of-variables)
-- [3.0 Predictors Analysis and Relevancy](30-predictors-analysis-and-relevancy)
+- [3.0 Predictors Analysis and Relevancy](#30-predictors-analysis-and-relevancy)
 - [4.0 Dimension Reduction](#40-dimension-reduction)
    - [PCA Analysis:](#pca-analysis)
+- [5.0 Data partitioning method](#50-data-partitioning-method)
 ### Introduction
 The North Point Software Company is a firm that sells games and educational software. The company wants to expand its customer base, so they join the group name consortium. This group specializes in computer hardware and software products. Every member of the group shares their customer list in a pool, and they receive the same number of customers from the pool. The North Point Software Company shared 200,000 names in the pool, for a total of 5,000,000 names in the pool. The company picked 20,000 names and did a test mailing. Out of the 20,000 customers listed, 1065 purchased after receiving mail, with a response rate of 0.053, or 5.3%. So, the company made a list of 1000 purchasers and 1000 non-purchasers (a response rate of 0.5 or 50%) to build the best prediction model. While using the prediction model in the pool, the purchase rate needs to be adjusted back down by multiplying each “case’s probability of purchase” by 5.3/50, or 0.106. The company is allowed to use a prediction model in the pool (5,000,000), so they can select the top 180,000 customers from the pool. The study will use the models to identify the purchasers and predict their spending behaviours to maximize gross profit and the customer base.
 
@@ -358,4 +359,44 @@ biplot(pca_result)
     <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/5f9b0bbf-c879-4845-bec7-0445ac2c91b3"
  alt="Summary" style="max-width:100%;">
     <p><b>Figure 4.0.4 :</b> Variability of the predictors </p>
+</div>
+
+### 5.0 Data partitioning method
+- In the data partitioning, the data is divided into training (40%), validation (35%), and holdout (25%). In the training data, there are 800 random observations, which are going to be used to train the model. In the validation data, 700 random observations are not included in the training data used to evaluate model performance. In holdout data, 500 observations are not in training data, and validation data is used to evaluate the performance of new unseen data. Holdout data is fresh data or new data for the model and never seen or used by the model, which will use as how the model will works on the pool data.
+- So, the company can target customers who are classified as “purchaser” to send a mail.
+#### Data Partition:
+- First, the target variable “Purchase” is converted into a factor, with 0 as non-purchaser and 1 as purchaser. For the classification, the spending column is removed as per business purpose to select a customer who is a “purchaser” or “non-purchaser”.
+- First six raw of training, validation, and holdout data:
+```
+df<-df[,-24]
+dim(df)
+df <- df %>%
+  mutate(
+    Purchase = factor(Purchase, levels=c(0,1), labels=c("Non-Purchaser","Purchaser"))
+  )
+
+
+# data Partitioning
+set.seed(1)
+## partitioning into training (40%), validation (35%), holdout (25%)
+train.rows <- sample(rownames(df), nrow(df)*0.4)
+valid.rows <- sample(setdiff(rownames(df), train.rows),nrow(df)*0.35)
+holdout.rows <- setdiff(rownames(df), union(train.rows, valid.rows))
+# create the 3 data frames by collecting all columns from the appropriate rows
+train.df <- df[train.rows, ]
+valid.df <- df[valid.rows, ]
+holdout.df <-df[holdout.rows, ]
+
+head(train.df)
+head(valid.df)
+head(holdout.df)
+
+dim(train.df)
+dim(valid.df)
+dim(holdout.df)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/6620cfcd-73cf-49b1-955a-c3c5dbaaff02"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 5.0.1 :</b> Data Partition </p>
 </div>
