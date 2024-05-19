@@ -5,12 +5,12 @@
 ## Table of Contents
 - [Introduction](#introduction)	
 - [1.0 Business Problems and Goals](#10-business-problems-and-goals)	
-  - 1.1 Business Problems:	
-  - 1.2 Analytics Goals:
-- 2.0 Data Exploration and Preprocessing	
-  - 2.1 Attributes Definition:	
-  - 2.2 Data Exploration:	
-  - 2.3 Distribution of Variables
+  - [1.1 Business Problems:](#11-business-problems)	
+  - [1.2 Analytics Goals:](#12-analytics-goals)
+- [2.0 Data Exploration and Preprocessing](#20-data-exploration-and-preprocessing)	
+  - [2.1 Attributes Definition:](21-attributes-definition)	
+  - [2.2 Data Exploration:](22-data-exploration)	
+  - [2.3 Distribution of Variables](23-distribution-of-variables)
  
 ### Introduction
 The North Point Software Company is a firm that sells games and educational software. The company wants to expand its customer base, so they join the group name consortium. This group specializes in computer hardware and software products. Every member of the group shares their customer list in a pool, and they receive the same number of customers from the pool. The North Point Software Company shared 200,000 names in the pool, for a total of 5,000,000 names in the pool. The company picked 20,000 names and did a test mailing. Out of the 20,000 customers listed, 1065 purchased after receiving mail, with a response rate of 0.053, or 5.3%. So, the company made a list of 1000 purchasers and 1000 non-purchasers (a response rate of 0.5 or 50%) to build the best prediction model. While using the prediction model in the pool, the purchase rate needs to be adjusted back down by multiplying each “case’s probability of purchase” by 5.3/50, or 0.106. The company is allowed to use a prediction model in the pool (5,000,000), so they can select the top 180,000 customers from the pool. The study will use the models to identify the purchasers and predict their spending behaviours to maximize gross profit and the customer base.
@@ -63,10 +63,50 @@ colnames(North_Point_List)
  alt="Summary" style="max-width:100%;">
     <p><b>Figure 2.2.2:</b> Columns names of the dataset</p>
 </div>
+
 - Summary statistics provide an overview of the dataset including mean, median, minimum, maximum,1st Quartile, and 3rd Quartile. In the summary of the dataset (figure: 2.2.3), the company got customers from various sources and the majority of the customers are from the US. However, there are very few customers whose addresses are residential (mean: 0.221). From all the sources, the company got the highest number of customers from source_e (mean: 0.151) and the lowest number of customers from source_p (mean:0.006). The average spending amount by the customers is $102.6 with minimum spending $0 and maximum spending $1500. Also, some variables are related to customer behaviors like frequency (the number of purchases), last_update_days_ago, and spending.
+```
+#Summary of the data
+summary(North_Point_List)
+```
 <div align="center">
     <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/8c471399-6958-4fcf-8a92-5ab88c749479"
  alt="Summary" style="max-width:100%;">
     <p><b>Figure 2.2.3:</b> Summary of the data </p>
 </div>
 
+- Figure 2.2.4 shows that the data types for all the variables are numeric. In the dataset, the Sources, US, Web Order, Gender=male, Address_is_res, and Purchase columns have categorical data where 0 represents ‘no’ and 1 represents ‘yes’.
+```
+#the data types of the variables
+str(North_Point_List)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/0a22932c-77d3-40aa-bff5-c38504868934"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 2.2.4:</b> Data Types of the Variables </p>
+</div>
+
+- Missing values in the dataset give information about fake transactions or other information. However, checking the missing values in the dataset, figure 2.2.5 shows that there is no missing value in the dataset. This means all the transaction data and other information (e.g., sources, gender=male, address) are correctly collected.
+```
+#seeing the missing values
+colSums(is.na(North_Point_List))
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/4468ec0e-4abe-4dd3-a59b-7ecf0a8c49e0"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 2.2.5:</b> Checking the missing Values </p>
+</div>
+
+- When it comes to checking the zeros in the dataset (Figure 2.2.6), there are 999 zeros in spending, which means there are 1001 customers who spent money, but there are only 1000 customers who purchased after receiving a mail. This might be happening due to a web order or a customer making an offline transaction. Also, 951 zeros in gender columns show that 951 customers are females and 1049 are males.
+```
+#check for zero
+colSums(North_Point_List==0)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/2c048367-b766-4d9d-8037-7e097562752c"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 2.2.6:</b> Check for the Zero’s </p>
+</div>
+
+#### 2.3 Distribution of Variables
+- The Distribution of Purchase graph (Figure 2.3.1) shows that 1000 customers made purchases and 1000 customers didn't make any purchases after receiving a mail from the company. The distribution of gender (Figure 2.3.1) shows that male customers are more than female customers.
