@@ -37,11 +37,36 @@ The main goal of the North Point Software Company is to select all the potential
 -	**Spending**: For those prospects who made a purchase (Purchase = 1), this variable represents the amount they spent. It is likely a numeric variable that indicates the monetary value of the purchase.
 
 #### 2.2 Data Exploration:
-- Data exploration helps to get the value inside of the dataset. First, the dataset is typically loaded using the 'read_csv' function. With the “head ()” function, which shows the first six rows and dimension of the dataset (Figure 2.2.1). In the dataset, there are 2000 rows (records) and 25 columns (attributes) stored as ‘North_Point_List’. The target variables are “Purchase” and “Spending” which show whether a customer made a purchase or not after receiving mail and how much amount (in dollars) a customer spent. 
+- Data exploration helps to get the value inside of the dataset. First, the dataset is typically loaded using the 'read_csv' function. With the “head ()” function, which shows the first six rows and dimension of the dataset (Figure 2.2.1). In the dataset, there are 2000 rows (records) and 25 columns (attributes) stored as ‘North_Point_List’. The target variables are “Purchase” and “Spending” which show whether a customer made a purchase or not after receiving mail and how much amount (in dollars) a customer spent.
+``` R Code:
+#Load the dataset
+North_Point_List <- read_csv("G:/Webster/Analytical Practicum/Final/North-Point List.csv")
+North_Point_List <- data.frame(North_Point_List)
+
+#First Six rows 
+head(North_Point_List)
+#the dimension of the data
+dim(North_Point_List)
+```
 <div align="center">
-    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/9e940f13-f4cd-4f56-82a2-c94a7634ef6d" alt="First Six Rows and dimension of the data" style="max-width:100%;">
-    <p><b>Figure 2.2.1:</b> Summary</p>
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/9e940f13-f4cd-4f56-82a2-c94a7634ef6d" alt="Summary" style="max-width:100%;">
+    <p><b>Figure 2.2.1:</b> First Six Rows and dimension of the data</p>
 </div>
 
-
+- Figure 2.2.2 displays the column names of the dataset which includes sequence number, US, different sources, freq (frequency), last update days ago and 1st update days ago, web order, Gender=male, Address is res (US), Purchase, and Spending.
+```
+#colnames of the dataset
+colnames(North_Point_List)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/b636279c-f9a7-4f27-bc86-008c2544171c"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 2.2.2:</b> Columns names of the dataset</p>
+</div>
+- Summary statistics provide an overview of the dataset including mean, median, minimum, maximum,1st Quartile, and 3rd Quartile. In the summary of the dataset (figure: 2.2.3), the company got customers from various sources and the majority of the customers are from the US. However, there are very few customers whose addresses are residential (mean: 0.221). From all the sources, the company got the highest number of customers from source_e (mean: 0.151) and the lowest number of customers from source_p (mean:0.006). The average spending amount by the customers is $102.6 with minimum spending $0 and maximum spending $1500. Also, some variables are related to customer behaviors like frequency (the number of purchases), last_update_days_ago, and spending.
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/8c471399-6958-4fcf-8a92-5ab88c749479"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 2.2.3:</b> Summary of the data </p>
+</div>
 
