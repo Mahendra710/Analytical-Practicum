@@ -807,7 +807,8 @@ accuracy(tree.test.pred,valid.p$Spending)
  alt="Summary" style="max-width:100%;">
     <p><b>Figure 9.0.1:</b> Comparison of regression Models  </p>
 </div>
-- Among all the linear models, stepwise backward regression performs better on the validation dataset, with an RMSE of 165.6397. Using this model, the predicted spending value will be by the customers. It provides the estimated spending amount that customers are going to spend on software and games.
+
+Among all the linear models, stepwise backward regression performs better on the validation dataset, with an RMSE of 165.6397. Using this model, the predicted spending value will be by the customers. It provides the estimated spending amount that customers are going to spend on software and games.
 
 ### 10.0 Profit analysis
 - For modeling and performance, logistic regression model will be used for classification and stepwise backward regression for prediction. These models will be used for the holdout data, which was not used before by these models. For the modelling, the dataset has 2000 customer details, which includes 1000 purchasers and 1000 non-purchasers, which means the response rate is 50%. However, the actual response rate is 0.1065. So, by adjusting the probability of the purchaser and their expected spending amount with an actual response rate of 0.1065.
