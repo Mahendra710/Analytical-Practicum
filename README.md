@@ -1,7 +1,26 @@
 ## North Point Software Listing Company
 
 ### North Point Software Listing Company Dataset File: [Click Here:](https://github.com/Mahendra710/Analytical-Practicum/blob/main/North-Point%20List.csv)
-
+```
+# Load the necessary packages
+library(readr)
+library(ggplot2)
+library(reshape2)
+#install.packages("corrplot")
+library(corrplot)
+# install.packages("GGally")
+library(GGally)
+library(dplyr)
+library(factoextra)
+library(caret)
+#install.packages("rpart")
+library(rpart)
+library(rpart.plot)
+library(e1071)
+library(forecast)
+library(gains)
+library(gridExtra)
+```
 ## Table of Contents
 - [Introduction](#introduction)	
 - [1.0 Business Problems and Goals](#10-business-problems-and-goals)	
