@@ -1,4 +1,4 @@
-# Analytical-Practicum
+## North Point Software Listing Company
 
 ### North Point Software Listing Company Dataset File: [Click Here:](https://github.com/Mahendra710/Analytical-Practicum/blob/main/North-Point%20List.csv)
 
@@ -15,6 +15,31 @@
 - [4.0 Dimension Reduction](#40-dimension-reduction)
    - [PCA Analysis:](#pca-analysis)
 - [5.0 Data partitioning method](#50-data-partitioning-method)
+- [6.0 Classifier Models Selection and Model Performance](#60-classifier-models-selection-and-model-performance)
+  - [6.1 Logistic regression model](#61-logistic-regression-model)
+  - [6.2 Evaluating the logistic regression model Performance](#62-evaluating-the-logistic-regression-model-performance)
+  - [6.3 Stepwise Regression Model](#63-stepwise-regression-model)
+  - [6.4 Evaluating the Stepwise Backward model Performance](#64-evaluating-the-stepwise-backward-model-performance)
+  - [6.5 Evaluating the Stepwise Forward model Performance](#65-evaluating-the-stepwise-forward-model-performance)
+  - [6.6 K-NN Model](#66-k-nn-model)
+  - [6.7 Evaluating K-NN model performance](#67-evaluating-k-nn-model-performance)
+  - [6.8 Tree Model](#68-tree-model)
+  - [6.9 Evaluating Tree model Performance](#69-evaluating-tree-model-performance)
+  - [6.10 Naïve Bayes Model](#610-naïve-bayes-model)
+  - [6.11 Evaluating Naïve Model Performance](#611-evaluating-naïve-model-performance)
+- [7.0 Best Classifier Model Selection](#70-best-classifier-model-selection)
+- [8.0 Regression Model Selection](#80-regression-model-selection)
+  - [8.1 Linear Regression Model](#81-linear-regression-model)
+  - [8.2 Evaluating Regression Model Performance](#82-evaluating-regression-model-performance)
+  - [8.3 Stepwise- backward Regression](#83-stepwise--backward-regression)
+  - [8.4 Evaluating Stepwise Backward Regression Model Performance](#84-evaluating-stepwise-backward-regression-model-performance)
+  - [8.5 Regression tree](#85-regression-tree)
+  - [8.6 Evaluating Regression tree model Performance](#86-evaluating-regression-tree-model-performance)
+- [9.0 Best Regression Model Selection](#90-best-regression-model-selection)
+- [10.0 Profit analysis](#100-profit-analysis)
+  - [10.1 Gross profit](#101-gross-profit)
+- [11.0 Conclusion](#110-conclusion)
+
 ### Introduction
 The North Point Software Company is a firm that sells games and educational software. The company wants to expand its customer base, so they join the group name consortium. This group specializes in computer hardware and software products. Every member of the group shares their customer list in a pool, and they receive the same number of customers from the pool. The North Point Software Company shared 200,000 names in the pool, for a total of 5,000,000 names in the pool. The company picked 20,000 names and did a test mailing. Out of the 20,000 customers listed, 1065 purchased after receiving mail, with a response rate of 0.053, or 5.3%. So, the company made a list of 1000 purchasers and 1000 non-purchasers (a response rate of 0.5 or 50%) to build the best prediction model. While using the prediction model in the pool, the purchase rate needs to be adjusted back down by multiplying each “case’s probability of purchase” by 5.3/50, or 0.106. The company is allowed to use a prediction model in the pool (5,000,000), so they can select the top 180,000 customers from the pool. The study will use the models to identify the purchasers and predict their spending behaviours to maximize gross profit and the customer base.
 
@@ -616,7 +641,7 @@ confusionMatrix(default.ct.pred.valid ,valid.df$Purchase,positive = "Purchaser")
 </div>
 
 <div align="center">
-    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/46f5189e-02af-4936-8c2e-0c4bdf4c692"
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/ad7334f4-ca6d-4f30-a8c5-79cb16ca44be"
  alt="Summary" style="max-width:100%;">
     <p><b>Figure 6.9.2 :</b> Confusion Matrix for Validation Data</p>
 </div>
@@ -663,4 +688,206 @@ confusionMatrix(predict(purchase.nb, newdata = valid.df), valid.df$Purchase, pos
  alt="Summary" style="max-width:100%;">
     <p><b>Figure 7.0.1:</b> Comparison of Classification Models </p>
 </div>
+
 - Among all the classification models, logistic regression performance is better than that of other models on the validation dataset with an accuracy of 79.29% and Sensitivity of 0.7383. Using this model, the probability of purchaser will be calculated, which gives the probability of customer likely to be a purchaser after receiving mail.
+
+### 8.0 Regression Model Selection
+For the model selection, the below model will be used to predict the spending amount for the customer who made a purchase after receiving a mail. 
+- Linear Regression model
+-	Stepwise- Backward model
+-	Regression tree
+
+Before the modelling process, only purchaser-based partitions will be used for the training and validation datasets. The “sequence” and “purchase” will be removed for modelling. So, there are 396 records and 23 columns in the training dataset, and the validation data set has 363 records and 23 columns.
+```
+df1=data.frame(North_Point_List)
+df1<-df1[,-1]
+
+df1 <- df1 %>%
+  mutate(
+    Purchase = factor(Purchase, levels=c(0,1), labels=c("Non-Purchaser","Purchaser"))
+  )
+head(df1)
+# data Partitioning
+set.seed(1)
+## partitioning into training (40%), validation (35%), holdout (25%)
+train.rows <- sample(rownames(df1), nrow(df1)*0.4)
+valid.rows <- sample(setdiff(rownames(df1), train.rows),nrow(df1)*0.35)
+holdout.rows <- setdiff(rownames(df1), union(train.rows, valid.rows))
+# create the 3 data frames by collecting all columns from the appropriate rows
+train.df <- df1[train.rows, ]
+valid.df <- df1[valid.rows, ]
+holdout.df <-df1[holdout.rows, ]
+
+train.p <- subset(train.df, Purchase == "Purchaser")
+valid.p <- subset(valid.df, Purchase=="Purchaser")
+train.p<-train.p[,-23]
+valid.p <- valid.p[,-23]
+dim(train.p)
+dim(valid.p)
+
+```
+#### 8.1 Linear Regression Model
+- Using the regression function lm, the model is trained using a training dataset. The targeted variable, spending, can be predicted using the intercept and coefficient values for the predictors. The model output (Figure: 8.1.1) marked the stars as the important predictors. The minimum residual is -425.52, and the maximum residual is 1062.70. The positive coefficient of the predictors shows the more amount of spending on games and software. The negative coefficient shows the less amount of spending on games and software.
+```
+sr.model <- lm(Spending ~. , data = train.p)
+summary(sr.model)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/b13a7449-8c77-451c-8726-b047ddff7318"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 8.1.1:</b> Summary of the Regression Model </p>
+</div>
+
+#### 8.2 Evaluating Regression Model Performance
+- From figure 8.2.1, the model gave the RMSE (Root Mean Square Error) of 167.2498. which shows the predictor deviates from the actual value is around 167 units.
+```
+pred<- predict(sr.model,valid.p)
+#Accuracy for validation
+accuracy(pred,valid.p$Spending)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/02ee8fd5-5aff-49b2-b189-a1fdfb3138a2"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 8.2.1:</b> Accuracy for Validation </p>
+</div>
+
+#### 8.3 Stepwise- backward Regression
+- In the stepwise-backward regression model, check for all the important predictors by removing less effective predictors and training the model using the training dataset. The stepwise-backward model summary (Figure: 8.3.1) shows that five variables give better performance on the training dataset. The model marked stars as the important predictors.
+```
+stepwise_backward <- step(sr.model,direction = "backward")
+summary(stepwise_backward)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/c36fdaae-7496-4894-a879-bcc033805add"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 8.3.1:</b> Summary of Stepwise Backward Regression Model </p>
+</div>
+
+#### 8.4 Evaluating Stepwise Backward Regression Model Performance
+- With regards to accuracy for validation data (Figure 8.4.1), the model gave 165.6397 RMSE on new unseen data. Also, accuracy parameters ME (mean error) shows the mean average value (-1.618712) for the validation dataset.
+```
+p <- predict(stepwise_backward, valid.p)
+#Accuracy for Validation
+accuracy(p,valid.p$Spending)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/52926b76-6013-4b6e-9dd8-96f64cc007c5"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 8.4.1:</b> Accuracy for Validation </p>
+</div>
+
+#### 8.5 Regression tree
+- The regression tree model is built by using rpart() function on the training dataset. The tree plot (Figure: 8.5.1) shows tree rules for the model. For example, if frequency is less than 3 than the average spending is 148 which 70% accurate.
+```
+tree.model <- rpart(Spending ~ ., data=train.p)
+rpart.plot(tree.model)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/3e2c02c9-0798-4938-8d65-fb78881a16f5"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 8.5.1:</b> Regression tree plot </p>
+</div>
+
+#### 8.6 Evaluating Regression tree model Performance.
+- RMSE vale of regression tree model for validation data (Figure: 8.6.1) is 181.0081, which shows the predictor deviates from the actual value is around 181 units.
+```
+tree.test.pred <- predict(tree.model, valid.p, type='vector')
+#Accuracy for Validation
+accuracy(tree.test.pred,valid.p$Spending)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/b5e06926-77fa-41c7-9e33-d6345fecc6b8"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 8.6.1:</b> Accuracy for Validation </p>
+</div>
+
+### 9.0 Best Regression Model Selection
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/12f2d223-0ff4-4bf9-bc63-d13b1a4e7a4e"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 9.0.1:</b> Comparison of regression Models  </p>
+</div>
+- Among all the linear models, stepwise backward regression performs better on the validation dataset, with an RMSE of 165.6397. Using this model, the predicted spending value will be by the customers. It provides the estimated spending amount that customers are going to spend on software and games.
+
+### 10.0 Profit analysis
+- For modeling and performance, logistic regression model will be used for classification and stepwise backward regression for prediction. These models will be used for the holdout data, which was not used before by these models. For the modelling, the dataset has 2000 customer details, which includes 1000 purchasers and 1000 non-purchasers, which means the response rate is 50%. However, the actual response rate is 0.1065. So, by adjusting the probability of the purchaser and their expected spending amount with an actual response rate of 0.1065.
+- First, the column of the probability of the purchaser is added using a linear regression model, which shows the chance that the customer is likely to make purchases after receiving the mail. Also, another column with the predicted spending value of the customer is added using a stepwise backward model. The probability of a purchaser is adjusted by multiplying it by the original purchase rate of 0.1065. For the adjusted spending value, multiply the predicted spending values by the adjusted probabilities of purchase. Figure 10.0.1 shows the output of these processes, which includes the first six rows of the holdout data.
+```
+### Add a column to the data frame with the predicted probability of purchase 
+holdout.df$predicted_probability_Purchaser <- predict(lgmodel,holdout.df,type= "prob")[,"Purchaser"]
+
+### Add another column with predicted spending value 
+holdout.df$predicted_spending_value <- predict(stepwise_backward,holdout.df)
+
+### Add a column for “adjusted probability of purchase” to adjust for oversampling the purchaser 
+original_purchase_rate <- 0.1065
+holdout.df$adjusted_probability_of_purchase <- holdout.df$predicted_probability_Purchaser*original_purchase_rate
+
+### Add another column for expected spending
+holdout.df$expected_spending <- holdout.df$predicted_spending_value*holdout.df$adjusted_probability_of_purchase
+head(holdout.df)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/01e78b1d-889f-4df4-8272-ebd86597f393"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 10.0.1:</b> Model Performance on Holdout data  </p>
+</div>
+
+- A cumulative gain chart and a decile-wise lift chart are used to see the model's performance on new, unseen data. These models are compared with the random model, which showed a baseline. The cumulative gain chart (Figure 10.0.2) shows the expected spending by the top customers. For example, here it shows that the North Point company could expect around $2000 in spending from the top 50 customers out of 500 customers. Also, a decile-wise lift chart shows how much a predictive model performs as compared to a random model. From figure 10.0.2, a lift of around 4 shows that the predictive model can identify the top 10% of 500 customers four times better than randomly selected customers.
+```
+gain <- gains(holdout.df$expected_spending, holdout.df$adjusted_probability_of_purchase, groups=10)
+df2 <- data.frame(
+  ncases=c(0, gain$cume.obs),
+  cumulative=sum(holdout.df$expected_spending)*c(0, gain$cume.pct.of.total)
+)
+df2
+g1<-ggplot(df2, aes(x=ncases, y=cumulative)) +
+  geom_line() +
+  geom_segment(aes(x=0, y=0, xend=nrow(holdout.df), yend=sum(holdout.df$expected_spending)),
+               color="gray", linetype=2) + # adds baseline
+  labs(x="# Cases", y="# Expected Spending", title="Cumulative gains chart")
+
+g1
+
+barplot(gain$mean.resp / mean(holdout.df$expected_spending), names.arg=seq(10, 100, by=10),
+        xlab="Percentile", ylab="Decile mean / global mean")
+
+# Decile-wise lift chart
+df3 <- data.frame(
+  decile=gain$depth,
+  meanResponse=gain$mean.resp /mean(holdout.df$expected_spending))
+
+g2 <- ggplot(df3, aes(x=decile, y=meanResponse)) +
+  geom_bar(stat="identity") +
+  labs(x="decile", y=" ", title="Decile-wise lift chart")
+grid.arrange(g1,g2,ncol=2)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/4bc62b3b-1a24-4d5c-a909-118361a4a06a"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 10.0.2:</b> Cumulative Gains Chart and Decile wise lift chart</p>
+</div>
+
+#### 10.1 Gross profit
+- So, Holdout data is used to calculate the expected spending value for new customers. The sum of the expected spending for 500 customers is $4815.239. Each list booklet costs approximately $2 to mail, which includes printing, postage, and mailing other mailing costs. The company need to spend $360,000 to send the mail to 180,000 customers. The company could expect the spending amount of $1,733,486 from remaining180,000 customers. So, the gross profit is $1,373,486 that firm could expect from the remaining 180,000 customers.
+Figure 10.1.1 shows the calculation of this process.
+```
+#sum of total expected spending form 500 customers
+sum(holdout.df$expected_spending)
+#sum of total expectd spending form 180,000 customers
+(180000*sum(holdout.df$expected_spending))/500
+
+#expected gross profit from 180,000 customers
+((180000*sum(holdout.df$expected_spending))/500)- (2*180000)
+
+#expected gross profit from one customer
+(((180000*sum(holdout.df$expected_spending))/500)- (2*180000))/180000
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/d93b1fc0-43ea-4b4d-a4c2-902fc1eb35e1"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 10.1.1:</b> Gross Profit Calculation </p>
+</div>
+
+### 11.0 Conclusion
+In conclusion, the company’s main customers come from the US, and male customers are more frequent than female customers. When customers buy more software or games again, the company generates more revenue from those customers. For the classification, logistic regression performs better on new data with an accuracy of 0.7929 and sensitivity of 0.7383, while the stepwise backward model performs well on new data with an RMSE of 165.6397. Using these models, the company could expect $1,373,486 in gross profit from the remaining 180,000 customers. In the recommendation, if the company can select the customers from the 5,000,000, then they should select or ask for contact details of the top-ranked customers by the expected spending, then use them partially, like first using 20,000 customers from the top 180,000 customers, and so on. Also, the company can use first the high probability of purchasers like top 10% and the high expected spending of customers to send the mail. Then, the company can use other marketing strategies for those customers with a lower probability and a lower spending amount. For example, the company can provide some additional discounts on games or some free games or software.
