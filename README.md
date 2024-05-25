@@ -400,3 +400,267 @@ dim(holdout.df)
  alt="Summary" style="max-width:100%;">
     <p><b>Figure 5.0.1 :</b> Data Partition </p>
 </div>
+
+### 6.0 Classifier Models Selection and Model Performance
+For the model selection, the below model will be used to predict class, whether customers make a purchase or not.
+- Logistic regression model
+-	Stepwise regression model 
+-	K-NN model
+-	Tree model (default tree and deep tree)
+-	Naïve Bayes model
+
+#### 6.1 Logistic regression model:
+- The logistic regression model is a supervised algorithm used for classification. In the dataset, target variable is “Purchase”, the logistic regression model gives the probability of customer purchase or not. First, the model is build using the ‘glm’ function on the training dataset.
+- From the below model (Figure : 6.1.1) , logistic regression equations:
+- logit=β_0+β_1 x_1+β_2 x_2+…+β_q x_q
+- Logit(Purchase=1)= -4.1790531 + 0.2263908 *{US} + 1.7689511 *{source_a} - 0.0324075 *{source_c} - 0.1947970 *{source_b} - 0.7524404 *{source_d} + 0.9862691 *{source_e} + 0.8812215 *{source_m} + 0.3637817 *{source_o} - 2.9005290 *{source_h} + 0.7551389 *{source_r} + 1.2815347 *{source_s} + 0.6816827 *{source_t} + 2.2084900 *{source_u} + 2.3429232 *{source_p} + 1.7157863 *{source_x} + 1.2327250 *{source_w} + 2.3463503*{Freq} + 0.0001486 *{last_update_days_ago} - 0.0001993 *{X1st_update_days_ago} + 1.1026641 *{Web.order} - 0.1718877 *{Gender.male} - 0.8235130 *{Address_is_res}
+- p=1/(1+e^(-(logit)) )
+- If the logit value is greater than 0 then success is more likely to happen. The positive coefficient shows the higher predictor value is related to a high chance of getting a purchase. In the dataset, higher frequency means a high chance of purchase. The model output in figure 6.1.1 shows the intercept and coefficient values for the predictors in the model. Also, star marked variable shows the importance of predictors in the model.
+
+```
+##-----------------------Logistic Regression------------------------------------
+#Training the model
+# build model
+
+trControl <- caret::trainControl(method="cv", number=5, allowParallel=TRUE)
+lgmodel <- caret::train(Purchase ~ ., data=train.df, trControl=trControl,
+                        method="glm", family="binomial")
+lgmodel
+summary(lgmodel$finalModel)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/608ccdc8-8dda-4d18-bdda-1f6651035ba3"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.1.1 :</b> Summary of the model</p>
+</div>
+
+#### 6.2 Evaluating the logistic regression model Performance:
+- When it comes to model performance, the logistic regression model gives an 82.5% accuracy rate with a sensitivity of 0.8207 and a specificity of 0.8292 for the training model. While testing this model on new unseen data (validation data), it correctly identified the class with an accuracy of 79.29%. For business purposes, a logistic regression model can classify around 73.83% of the positive class (Purchaser) through this predictor information and select top customers among them who are more likely to purchase and send them mail. Figure 6.2.1 shows the logistic regression model performance on training and validation data.
+
+```
+options(scrippen = 999)
+
+#evaluating performance of training data
+confusionMatrix(predict(lgmodel, train.df), train.df$Purchase, positive = "Purchaser")
+#evaluating performance of Validation data
+confusionMatrix(predict(lgmodel, valid.df), valid.df$Purchase, positive = "Purchaser")
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/8df99a72-6a7d-4f63-bd28-0d544ed2c50a"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.2.1 :</b> Confusion Matrix of Logistic Regression Model</p>
+</div>
+
+#### 6.3 Stepwise Regression Model:
+- The figure 6.3.1 shows the summary of the stepwise backward and figure 6.3.2 shows the  summary of forward models, the AIC (Akaike Information Criterion) of the backward model is **651.28** and the forward model is **649.46**. The summary also shows the coefficient values for all the predictors, which shows the importance of the predictors in the model. Also, it gives information about the changes in the model; for example, a high frequency shows a high chance of getting a positive class (purchaser). Stars indicate significant predictors in the model. Here, the low AIC shows the better performance of the model.
+
+```
+lg.full <- glm(Purchase ~ ., data = train.df, family = "binomial")
+
+# Stepwise backward
+step_backward <- step(lg.full, direction = "backward")
+summary(step_backward)
+
+# Stepwise forward
+lg.null <- glm(Purchase ~ 1, data = train.df, family = "binomial")  # Null model
+step_forward <- step(lg.null, scope = list(lower = lg.null, upper = lg.full), direction = "forward")
+summary(step_forward)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/43b25d95-7ca3-449f-a46a-c369474cdaf5"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.3.1 :</b>Summary of Stepwise Backward Regression Model</p>
+</div>
+
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/f1a20cb7-04db-44fe-914b-149608c36fe7"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.3.2 :</b> Summary of Stepwise Forward Regression Model</p>
+</div>
+
+#### 6.4 Evaluating the Stepwise Backward model Performance.
+- With regards to backward regression, the confusion matrix (Figure: 6.4.1) shows that the model performs 82.12% accurately on training data and 78.43% on validation data (Figure: 6.4.2). For validation data, 284 non-purchasers and 265 purchasers were correctly classified, whereas 98 non-purchasers and 53 purchasers were misclassified. As for business purposes, the backward regression model correctly identifies around 73% of the positive class from pool data, which helps the business owner decide which top customers from the pool to send mail to.
+
+```
+# Confusion matrix for backward stepwise model
+backward_pred_train <- predict(step_backward, newdata = train.df, type = "response")
+backward_pred_valid <- predict(step_backward, newdata = valid.df, type = "response")
+# Convert probabilities to binary predictions for backward stepwise model
+backward_pred_train_binary <- ifelse(backward_pred_train > 0.5, "Purchaser", "Non-Purchaser")
+backward_pred_valid_binary <- ifelse(backward_pred_valid > 0.5, "Purchaser", "Non-Purchaser")
+# Confusion matrix for training data
+confusionMatrix(table(backward_pred_train_binary, train.df$Purchase), positive = "Purchaser")
+# Confusion matrix for validation data
+confusionMatrix(table(backward_pred_valid_binary, valid.df$Purchase), positive = "Purchaser")
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/03bc4483-0b20-4eb7-8c84-ef583c6cf818"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.4.1 :</b>Confusion matrix for Training data</p>
+</div>
+
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/28db405a-aec5-4454-aa1e-d399ad0b50ae"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.4.2 :</b> Confusion Matrix for Validation Data</p>
+</div>
+
+#### 6.5 Evaluating the Stepwise Forward model Performance
+- With regards to forward regression, the below confusion matrix gives the accuracy of training data (Figure: 6.5.1) as 82.38% and validation data (Figure: 6.5.2) as 78.71%. Looking on the validation data, the model identified 281 non-purchasers and 270 purchasers correctly classified. However, 56 purchasers and 93 non-purchasers were misclassified. Businesses can use this model to classify the purchaser, which performs around 74.38% accurately classify positive class on new data.
+
+```
+# Confusion matrix for forward stepwise model
+forward_pred_train <- predict(step_forward, newdata = train.df, type = "response")
+forward_pred_valid <- predict(step_forward, newdata = valid.df, type = "response")
+# Convert probabilities to binary predictions
+forward_pred_train_binary <- ifelse(forward_pred_train > 0.5, "Purchaser", "Non-Purchaser")
+forward_pred_valid_binary <- ifelse(forward_pred_valid > 0.5, "Purchaser", "Non-Purchaser")
+# Confusion matrix for training data
+confusionMatrix(table(forward_pred_train_binary, train.df$Purchase), positive = "Purchaser")
+# Confusion matrix for validation data
+confusionMatrix(table(forward_pred_valid_binary, valid.df$Purchase), positive="Purchaser")
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/18285ea5-058b-4fa3-9af3-b0f85eed303a"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.5.1 :</b>Confusion matrix for Training data</p>
+</div>
+
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/6e2777a4-dbea-4424-a2f2-4ac220c12153"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.5.2 :</b> Confusion Matrix for Validation Data</p>
+</div>
+
+#### 6.6 K-NN Model 
+- The K-NN model is used for both classification and regression. In classification, the K-NN model predicts the new class based on the majority of its neighbour’s class. First, check the best k value for the model using the cross-validation method. From figure 29, k = 3 gives a more accurate model than others.
+
+```
+##-----------K-NN Model---------------------------------------------------------
+# use leave-one-out cross-validation
+trControl <- trainControl(method="loocv", number=5, allowParallel=TRUE)
+knn_model <- train(Purchase ~ ., data=train.df,
+                   method="knn",
+                   preProcess=c("center", "scale"),
+                   tuneGrid=expand.grid(k=seq(1, 13, 2)),
+                   trControl=trControl)
+
+knn_model
+#knn model with k =3.
+knn.model <- train(Purchase ~ ., data=train.df,
+                   method="knn",
+                   preProcess=c("center", "scale"),
+                   tuneGrid=expand.grid(k=3),
+                   trControl=trainControl(method="none"))
+knn.model
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/4a752b7b-521f-4bb1-b87c-348b250fdfce"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.6.1 :</b> Best K Values in K-NN model</p>
+</div>
+
+#### 6.7 Evaluating K-NN model performance.
+- Using k = 3, the k-nn model classified accuracy of 85.38 on training data (Figure 6.7.1) and 72.29% on validation data (Figure 6.7.1). For validation data, 267 non-purchasers and 239 purchasers were correctly classified, whereas 124 non-purchasers and 70 purchasers were misclassified. A sensitivity for validation shows that 65.84% of the positive class ‘Purchaser’ were correctly identified, and a specificity for validation data shows that 79.23% of the negative class “Non-Purchaser” were correctly identified.
+```
+#evaluating performance of training data
+confusionMatrix(predict(knn.model, train.df), train.df$Purchase, positive = "Purchaser")
+#evaluating performance of Validation data
+confusionMatrix(predict(knn.model, valid.df), valid.df$Purchase, positive = "Purchaser")
+
+
+#predict(knn.model, valid.df)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/97e098b0-300f-46e2-8042-38f1a1ae349e"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.7.1 :</b>Confusion Matrix for K-NN model on training and Validation data</p>
+</div>
+
+#### 6.8 Tree Model
+- From the default classification tree, if the frequency is less than 1, then it will be classified as a non-purchaser. Also, there are other predictors from tree shows about the class chances.
+```
+# # Classification tree
+#install.packages("rpart")
+library(rpart)
+library(rpart.plot)
+# classification tree
+
+#Default tree
+default.ct <- rpart(Purchase ~ ., data=train.df, method="class")
+#count number of leaves
+sum(default.ct$frame$var=='<leaf>')
+# plot tree
+rpart.plot(default.ct, extra=1, fallen.leaves=FALSE)
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/2614e2ab-0869-4983-ad91-9c6a3eef80c9"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.8.1 :</b>Default Classification Tree</p>
+</div>
+
+#### 6.9 Evaluating Tree model Performance:
+- About the default tree model, it is 84.38% accurate on training data (Figure: 6.9.1) and 77% accurate on validation data (Figure: 6.9.2). To classify new data, the default tree classified  75.48% correctly identifies the new class.
+```
+default.ct.pred.train <- predict(default.ct, train.df, type='class')
+#training confusion matrix
+confusionMatrix(default.ct.pred.train,train.df$Purchase,positive = "Purchaser")
+#validation confusion matrix
+default.ct.pred.valid <- predict(default.ct, valid.df, type='class')
+confusionMatrix(default.ct.pred.valid ,valid.df$Purchase,positive = "Purchaser")
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/e0e68f86-d7d8-4a19-9f06-15df76e8ddbf"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.9.1 :</b>Confusion matrix for Training data</p>
+</div>
+
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/46f5189e-02af-4936-8c2e-0c4bdf4c692"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.9.2 :</b> Confusion Matrix for Validation Data</p>
+</div>
+
+#### 6.10 Naïve Bayes Model 
+- A Naïve Bayes model is used for classification when there are more predictors. For the dataset, the Naïve Bayes model is built by loading the library library (e1071), which is used for statistical analysis. Then train the model using a training dataset, and it gives an output as a conditional probability for each predictor. Also, Figure 6.10.1 shows the output of a priori probabilities: there is a 50.5% chance of getting a non-purchaser and a 49.5% chance of getting a purchaser. The conditional probabilities for each predictor show the probability that the predictor belongs to a particular class. Then the model predicts the results using these probabilities and gives an output for the chance of the target variable.
+```
+library(e1071)
+options(scipen=999, digits = 7)
+
+purchase.nb <- naiveBayes(Purchase~ ., data = train.df)
+purchase.nb
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/9fb926f1-7996-409f-a2b1-6541bc1f43bb"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.10.1 :</b> Summary of Naïve Model</p>
+</div>
+
+#### 6.11 Evaluating Naïve Model Performance.
+- The model gives 73.12% accuracy on training data (Figure: 6.11.1) and 72.86% accuracy on new validation data (Figure: 6.11.2). 270 non-purchasers were correctly identified as non-purchasers, and 240 purchasers were correctly identified as purchasers in the validation data.
+```
+#training confusion matrix
+confusionMatrix(predict(purchase.nb, newdata = train.df), train.df$Purchase, positive = "Purchaser")
+
+#validation confusion matrix
+confusionMatrix(predict(purchase.nb, newdata = valid.df), valid.df$Purchase, positive = "Purchaser")
+```
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/d622446e-08c7-4cac-9567-cd294216fba0"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.11.1 :</b>Confusion matrix for Training data</p>
+</div>
+
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/e6f14aa4-9f3e-4e0d-bf22-538a1f1628c8"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 6.11.2 :</b> Confusion Matrix for Validation Data</p>
+</div>
+
+### 7.0 Best Classifier Model Selection
+<div align="center">
+    <img src="https://github.com/Mahendra710/Analytical-Practicum/assets/83266654/dda5d6e6-4753-4146-91ef-fdc0a8db6c60"
+ alt="Summary" style="max-width:100%;">
+    <p><b>Figure 7.0.1:</b> Comparison of Classification Models </p>
+</div>
+- Among all the classification models, logistic regression performance is better than that of other models on the validation dataset with an accuracy of 79.29% and Sensitivity of 0.7383. Using this model, the probability of purchaser will be calculated, which gives the probability of customer likely to be a purchaser after receiving mail.
